@@ -21,6 +21,13 @@ app = FastAPI(
     version="1.0.0"
 )
 
+
+@app.get("/health")
+def health():
+    """Health check endpoint."""
+    return {"ok": True, "service": "appstore-webhook"}
+
+
 @app.post("/v1/webhook")
 async def appstore_webhook(request: Request):
     """
