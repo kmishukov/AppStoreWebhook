@@ -11,17 +11,31 @@ from app.jwt_validator import validate_jwt_token
 logger = logging.getLogger(__name__)
 
 # Notification types from Apple (human‑readable descriptions)
+# Based on: https://developer.apple.com/documentation/appstoreservernotifications/notificationtype
 NOTIFICATION_TYPES = {
-    "INITIAL_BUY": "First-time subscription purchase",
-    "DID_RENEW": "Subscription renewed",
-    "DID_FAIL_TO_RENEW": "Failed to renew subscription",
-    "DID_CHANGE_RENEWAL_PREF": "Renewal preferences changed",
-    "DID_CHANGE_RENEWAL_STATUS": "Auto-renewal status changed",
+    "CONSUMPTION_REQUEST": "Customer initiated refund request, App Store requesting consumption data",
+    "DID_CHANGE_RENEWAL_PREF": "Customer changed subscription plan (upgrade/downgrade)",
+    "DID_CHANGE_RENEWAL_STATUS": "Customer changed subscription renewal status",
+    "DID_FAIL_TO_RENEW": "Subscription failed to renew due to billing issue",
+    "DID_RENEW": "Subscription successfully renewed",
     "EXPIRED": "Subscription expired",
-    "GRACE_PERIOD_EXPIRED": "Grace period expired",
-    "REFUND": "Refund issued",
-    "REVOKE": "Subscription revoked",
-    "TEST": "Test notification",
+    "EXTERNAL_PURCHASE_TOKEN": "External Purchase API notification",
+    "GRACE_PERIOD_EXPIRED": "Billing grace period ended without renewal",
+    "METADATA_UPDATE": "Subscription metadata changed (Advanced Commerce API)",
+    "MIGRATION": "Subscription migrated to Advanced Commerce API",
+    "OFFER_REDEEMED": "Customer redeemed subscription offer",
+    "ONE_TIME_CHARGE": "Customer purchased consumable/non-consumable/non-renewing subscription",
+    "PRICE_CHANGE": "Subscription price changed (Advanced Commerce API)",
+    "PRICE_INCREASE": "System informed customer of subscription price increase",
+    "REFUND": "App Store successfully refunded a transaction",
+    "REFUND_DECLINED": "App Store declined a refund request",
+    "REFUND_REVERSED": "App Store reversed a previously granted refund",
+    "RENEWAL_EXTENDED": "App Store extended subscription renewal date",
+    "RENEWAL_EXTENSION": "Subscription renewal date extension attempt",
+    "RESCIND_CONSENT": "Parent/guardian withdrew consent for child's app usage",
+    "REVOKE": "In-App Purchase no longer available through Family Sharing",
+    "SUBSCRIBED": "Customer subscribed to auto-renewable subscription",
+    "TEST": "Test notification from App Store",
 }
 
 
