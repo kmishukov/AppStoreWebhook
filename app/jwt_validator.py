@@ -81,11 +81,11 @@ def validate_jwt_token(signed_payload: str) -> Optional[Dict[str, Any]]:
             return None
         
         # Decode and verify JWT token
-        # Apple uses RS256 algorithm
+        # Apple uses ES256 algorithm
         decoded = jwt.decode(
             signed_payload,
             public_key,
-            algorithms=["RS256"],
+            algorithms=["ES256"],
             options={
                 "verify_signature": True,
                 "verify_exp": True,  # Verify expiration
