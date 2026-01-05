@@ -1,4 +1,6 @@
-import requests
+import asyncio
+
+import telegram
 from app.tg.config import Configuration
 
 def send_message(message: str) -> None:
@@ -9,14 +11,18 @@ def send_message(message: str) -> None:
         message: Message text to send
     """
     config = Configuration()
-    url = f"https://api.telegram.org/bot{config.getToken()}/sendMessage"
+    bot = telegram.Bot(config.getToken())
+    bot.send_message(
+        text=message,
+        chat_id=config.getAdminID(),
+        parse_mode="HTML"
+    )    
+    # async def _send():
+    #     async with bot:
+    #         await bot.send_message(
+    #             text=message,
+    #             chat_id=config.getAdminID(),
+    #             parse_mode="HTML"
+    #         )
     
-    response = requests.post(
-        url,
-        json={
-            "chat_id": config.getAdminID(),
-            "text": message,
-            "parse_mode": "HTML"
-        }
-    )
-    response.raise_for_status()
+    # asyncio.run(_send())
