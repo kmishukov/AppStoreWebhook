@@ -4,10 +4,10 @@ from pathlib import Path
 
 class Configuration:
     def __init__(self):
-        token = os.get("TOKEN")
-        admin_id = os.get("ADMIN_ID")
+        token = os.getenv("TOKEN")
+        admin_id = os.getenv("ADMIN_ID")
 
-        if not token or not admin_id or not machine:
+        if not token or not admin_id:
             raise ValueError("Missing TOKEN, ADMIN_ID or MACHINE in environment")
 
         self._token: str = token
