@@ -4,8 +4,8 @@ from fastapi import FastAPI, Request, HTTPException, status
 from fastapi.responses import JSONResponse
 from typing import Dict, Any
 
-from app.jwt_validator import validate_jwt_token
-from app.event_handlers import process_notification, NOTIFICATION_TYPES
+from jwt_validator import validate_jwt_token
+from event_handlers import process_notification, NOTIFICATION_TYPES
 
 # Logging configuration
 logging.basicConfig(
