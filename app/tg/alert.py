@@ -14,7 +14,7 @@ def send_message(message: str) -> None:
     bot = telegram.Bot(config.getToken())
 
     loop = asyncio.get_event_loop()
-    loop.run(bot.send_message(text=message, chat_id=config.getAdminID(), parse_mode="HTML"))
+    loop.run_until_complete(bot.send_message(text=message, chat_id=config.getAdminID(), parse_mode="HTML"))
     # async def _send():
     #     async with bot:
     #         await bot.send_message(
