@@ -90,8 +90,15 @@ def format_notification_message(notification_type: str, payload: Dict[str, Any])
                     product_id = decoded_tx.get("productId", "N/A")
                     purchase_date = decoded_tx.get("purchaseDate")
                     expires_date = decoded_tx.get("expiresDate")
+                    storefront = decoded_tx.get("storefront")  # Country/region code (e.g., "RUS", "USA")
+                    storefront_id = decoded_tx.get("storefrontId")  # Storefront ID
+                    
                     message_parts.append(f"<code>Transaction ID:</code> {tx_id}")
                     message_parts.append(f"<code>Product ID:</code> {product_id}")
+                    if storefront:
+                        message_parts.append(f"<code>Storefront:</code> {storefront}")
+                    if storefront_id:
+                        message_parts.append(f"<code>Storefront ID:</code> {storefront_id}")
                     if purchase_date:
                         message_parts.append(f"<code>Purchase:</code> {format_timestamp(purchase_date)}")
                     if expires_date:
