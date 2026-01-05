@@ -2,8 +2,8 @@ services:
   api:
     build: .
     container_name: appstore_webhook_api
-    # env_file:
-    #   - .env
+    env_file:
+      - .env
 
     ports:
       - "127.0.0.1:8001:8000"

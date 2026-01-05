@@ -3,6 +3,7 @@ Handlers for different event types from App Store Server Notifications.
 """
 import logging
 from typing import Dict, Any
+from app.tg.alert import send_message
 
 logger = logging.getLogger(__name__)
 
@@ -92,7 +93,7 @@ def handle_revoke(payload: Dict[str, Any]) -> None:
 def handle_test(payload: Dict[str, Any]) -> None:
     """Handle test notification."""
     logger.info("Handling TEST: received test notification from Apple")
-    # Test notifications usually require logging only
+    send_message("Test notification received from Apple")
     pass
 
 
