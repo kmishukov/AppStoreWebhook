@@ -130,19 +130,3 @@ async def appstore_webhook(request: Request):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal server error"
         )
-
-
-@app.get("/v1/test")
-async def test_webhook():
-    """
-    Test endpoint to verify service is running and reachable.
-    """
-    return {
-        "status": "ok",
-        "message": "Webhook endpoint is accessible",
-        "endpoints": {
-            "webhook": "/v1/webhook",
-            "health": "/health"
-        },
-        "supported_notification_types": list(NOTIFICATION_TYPES.keys())
-    }
