@@ -13,7 +13,7 @@ def _generate_signing_material():
     """Self-signed EC key pair + certificate, standing in for Apple's x5c chain."""
     private_key = ec.generate_private_key(ec.SECP256R1())
     name = x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, "Test Signer")])
-    now = datetime.datetime.now(datetime.timezone.utc)
+    now = datetime.datetime.now(datetime.UTC)
     cert = (
         x509.CertificateBuilder()
         .subject_name(name)
