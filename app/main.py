@@ -1,11 +1,12 @@
-import logging
 import json
-from fastapi import FastAPI, Request, HTTPException, status
-from fastapi.responses import JSONResponse
-from typing import Dict, Any
+import logging
+from typing import Any, Dict
 
-from app.jwt_validator import validate_jwt_token
+from fastapi import FastAPI, HTTPException, Request, status
+from fastapi.responses import JSONResponse
+
 from app.event_handlers import process_notification
+from app.jwt_validator import validate_jwt_token
 from app.message_formatter import NOTIFICATION_TYPES
 
 # Logging configuration

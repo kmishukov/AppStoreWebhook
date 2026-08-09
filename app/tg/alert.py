@@ -1,7 +1,9 @@
 import asyncio
 
 import telegram
+
 from app.tg.config import Configuration
+
 
 def send_message(message: str) -> None:
     """

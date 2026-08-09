@@ -2,9 +2,10 @@
 Handlers for different event types from App Store Server Notifications.
 """
 import logging
-from typing import Dict, Any
-from app.tg.alert import send_message
+from typing import Any, Dict
+
 from app.message_formatter import format_notification_message
+from app.tg.alert import send_message
 
 logger = logging.getLogger(__name__)
 

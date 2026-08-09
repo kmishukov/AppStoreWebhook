@@ -4,8 +4,9 @@ Formats notification data into HTML messages for Telegram.
 """
 import logging
 from datetime import datetime
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
 from zoneinfo import ZoneInfo
+
 from app.jwt_validator import validate_jwt_token
 
 logger = logging.getLogger(__name__)

@@ -5,14 +5,14 @@ Apple uses JWT tokens with an X.509 certificate chain (x5c) for signing.
 import base64
 import json
 import logging
-from typing import Optional, Dict, Any
 from datetime import datetime, timezone
+from typing import Any, Dict, Optional
 
 import jwt
 import requests
 from cryptography import x509
-from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import serialization
 
 logger = logging.getLogger(__name__)
 
