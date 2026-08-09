@@ -27,7 +27,6 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-    if: hashFiles('tests/**') != ''
     steps:
       - uses: actions/checkout@v4
 
