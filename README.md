@@ -58,6 +58,15 @@ The public endpoint must use HTTPS.
 | `GET` | `/health` | Health check |
 | `POST` | `/v1/webhook` | App Store notification receiver |
 
+## Development
+
+Install dev dependencies and run the test suite:
+
+```bash
+pip install -r requirements-dev.txt
+pytest
+```
+
 ## Security note
 
 The current validator verifies an ES256 signature using the leaf certificate from the JWT `x5c` header, but does not validate the full certificate chain against a trusted Apple Root CA. Add certificate-chain validation before using the service in production.
