@@ -4,16 +4,16 @@ import os
 class Configuration:
     def __init__(self):
         token = os.getenv("TOKEN")
-        admin_id = os.getenv("ADMIN_ID")
+        telegram_chat_id = os.getenv("TELEGRAM_CHAT_ID")
 
-        if not token or not admin_id:
-            raise ValueError("Missing TOKEN, ADMIN_ID or MACHINE in environment")
+        if not token or not telegram_chat_id:
+            raise ValueError("Missing TOKEN or TELEGRAM_CHAT_ID in environment")
 
         self._token: str = token
-        self._adminID: int = int(admin_id)
+        self._telegram_chat_id: int = int(telegram_chat_id)
 
-    def getToken(self):
+    def get_token(self):
         return self._token
 
-    def getAdminID(self):
-        return self._adminID
+    def get_chat_id(self):
+        return self._telegram_chat_id

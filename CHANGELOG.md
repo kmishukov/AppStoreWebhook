@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Test suite (`pytest`) covering JWT validation and the webhook endpoint.
 - `pyproject.toml` with project metadata and packaging config.
 - Community files: `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, issue/PR templates.
+- Trusted JWS verification using Apple's official App Store Server Library and Apple Root CA G3.
+- Multi-app verification with per-app verifier caching and an optional bundle ID/App Apple ID allowlist.
+- Environment selection and optional OCSP certificate revocation checks.
 
 ## [1.0.0]
 

@@ -1,11 +1,12 @@
 import json
 import logging
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.responses import JSONResponse
 
 from app.event_handlers import process_notification
-from app.jwt_validator import validate_jwt_token
+from app.jwt_validator import validate_jwt_token, validate_verifier_configuration
 from app.message_formatter import NOTIFICATION_TYPES
 
 # Logging configuration
@@ -14,10 +15,19 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    """Validate Apple verification settings before accepting webhooks."""
+    validate_verifier_configuration()
+    yield
+
+
 app = FastAPI(
     title="App Store Webhook Handler",
     description="Webhook handler for App Store Server Notifications",
     version="1.0.0",
+    lifespan=lifespan,
 )
 
 

@@ -26,8 +26,31 @@ cp .env.example .env
 
 Add your Telegram credentials to `.env`:
 
-- `ADMIN_ID` is the destination Telegram chat ID.
+- `TELEGRAM_CHAT_ID` is the destination Telegram chat ID.
 - `TOKEN` is the bot token issued by [BotFather](https://t.me/BotFather).
+
+Configure Apple verification:
+
+- `APPLE_ENVIRONMENTS` controls whether the service accepts `Production`, `Sandbox`, or both.
+- `APPLE_ENABLE_ONLINE_CHECKS` enables Apple certificate revocation checks through OCSP.
+- `APPLE_ROOT_CA_PATHS` optionally overrides the bundled root certificate with one or more certificate paths separated by `:`.
+- `APPLE_ALLOWED_APPS` is an optional JSON object mapping bundle IDs to numeric Apple IDs.
+
+By default, the service accepts notifications for any application when the complete
+JWS certificate chain proves that Apple signed them. A verifier is created and cached
+for every bundle ID and environment, so one webhook can serve multiple applications.
+Set `APPLE_ALLOWED_APPS` only when you want to restrict the webhook to a known list:
+
+```dotenv
+APPLE_ALLOWED_APPS={"com.example.first":1234567890,"com.example.second":2345678901}
+```
+
+The repository includes Apple's public Root CA G3 certificate used to establish the
+certificate chain. This certificate is public and is not an App Store Connect `.p8`
+private key.
+
+The service validates this configuration during startup and refuses to start when
+required Apple settings or certificates are missing.
 
 Start the service:
 
@@ -67,9 +90,13 @@ pip install -r requirements-dev.txt
 pytest
 ```
 
-## Security note
+## Security
 
-The current validator verifies an ES256 signature using the leaf certificate from the JWT `x5c` header, but does not validate the full certificate chain against a trusted Apple Root CA. Add certificate-chain validation before using the service in production.
+Signed notifications, transaction information, and renewal information are verified
+with Apple's official App Store Server Library. Verification checks the certificate
+chain against Apple Root CA G3 as well as the bundle ID, environment, and App Apple
+ID contained in the Apple-signed payload. An optional allowlist can further restrict
+which applications the webhook accepts.
 
 ## Documentation
 

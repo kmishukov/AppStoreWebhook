@@ -33,21 +33,28 @@ def test_webhook_invalid_jwt():
     assert response.status_code == 401
 
 
-def test_webhook_missing_notification_type(signed_payload_factory):
-    token = signed_payload_factory({"notificationUUID": "abc-123"})
+def test_webhook_missing_notification_type(monkeypatch):
+    monkeypatch.setattr(
+        "app.main.validate_jwt_token",
+        lambda _token: {"notificationUUID": "abc-123"},
+    )
 
-    response = client.post("/v1/webhook", json={"signedPayload": token})
+    response = client.post("/v1/webhook", json={"signedPayload": "valid-token"})
 
     assert response.status_code == 400
 
 
-def test_webhook_success(monkeypatch, signed_payload_factory):
+def test_webhook_success(monkeypatch):
     monkeypatch.setattr("app.main.process_notification", lambda *args, **kwargs: None)
-    token = signed_payload_factory(
-        {"notificationType": "TEST", "notificationUUID": "abc-123"}
+    monkeypatch.setattr(
+        "app.main.validate_jwt_token",
+        lambda _token: {
+            "notificationType": "TEST",
+            "notificationUUID": "abc-123",
+        },
     )
 
-    response = client.post("/v1/webhook", json={"signedPayload": token})
+    response = client.post("/v1/webhook", json={"signedPayload": "valid-token"})
 
     assert response.status_code == 200
     body = response.json()

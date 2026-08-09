@@ -8,7 +8,7 @@ from datetime import datetime
 from typing import Any
 from zoneinfo import ZoneInfo
 
-from app.jwt_validator import validate_jwt_token
+from app.jwt_validator import validate_renewal_info_token, validate_transaction_token
 
 logger = logging.getLogger(__name__)
 
@@ -70,6 +70,7 @@ def format_notification_message(notification_type: str, payload: dict[str, Any])
     notification_desc = NOTIFICATION_TYPES.get(notification_type, notification_type)
     notification_uuid = payload.get("notificationUUID", "N/A")
     bundle_id = payload.get("data", {}).get("bundleId", "N/A")
+    app_apple_id = payload.get("data", {}).get("appAppleId")
     subtype = payload.get("subtype")
     signed_date = payload.get("signedDate")
     environment = payload.get("data", {}).get("environment", "Unknown")
@@ -102,7 +103,9 @@ def format_notification_message(notification_type: str, payload: dict[str, Any])
         try:
             transaction_jwt = data.get("signedTransactionInfo")
             if transaction_jwt:
-                decoded_tx = validate_jwt_token(transaction_jwt)
+                decoded_tx = validate_transaction_token(
+                    transaction_jwt, bundle_id, app_apple_id, environment
+                )
                 if decoded_tx:
                     tx_id = decoded_tx.get("transactionId", "N/A")
                     product_id = decoded_tx.get("productId", "N/A")
@@ -142,7 +145,9 @@ def format_notification_message(notification_type: str, payload: dict[str, Any])
         try:
             renewal_jwt = data.get("signedRenewalInfo")
             if renewal_jwt:
-                decoded_renewal = validate_jwt_token(renewal_jwt)
+                decoded_renewal = validate_renewal_info_token(
+                    renewal_jwt, bundle_id, app_apple_id, environment
+                )
                 if decoded_renewal:
                     auto_renew = decoded_renewal.get("autoRenewStatus", 0)
                     product_id = decoded_renewal.get("autoRenewProductId", "N/A")

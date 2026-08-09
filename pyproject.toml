@@ -19,8 +19,9 @@ classifiers = [
 dependencies = [
     "fastapi",
     "uvicorn[standard]",
+    "app-store-server-library>=3.1.2,<4",
     "pyjwt[crypto]>=2.8.0",
-    "cryptography>=41.0.0",
+    "cryptography>=43.0.0",
     "requests>=2.31.0",
     "python-dotenv>=1.0.0",
     "python-telegram-bot==22.5",
@@ -38,3 +39,6 @@ packages = ["app"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.isort]
+profile = "black"
