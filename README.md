@@ -17,27 +17,18 @@ A small FastAPI service for receiving App Store Server Notifications V2 and forw
 
 ## Quick start
 
-Create a directory and download the configuration files:
+Create a directory and download the environment template:
 
 ```bash
 mkdir appstore-webhook
 cd appstore-webhook
-curl -fsSLO https://raw.githubusercontent.com/kmishukov/AppStoreWebhook/main/docker-compose.yaml
 curl -fsSL https://raw.githubusercontent.com/kmishukov/AppStoreWebhook/main/.env.example -o .env
 ```
 
 Open `.env` and add your Telegram credentials. The Apple defaults work for both
 Production and Sandbox notifications.
 
-### Docker Compose (recommended)
-
-```bash
-docker compose up -d
-```
-
-### Docker
-
-Alternatively, run the published image directly:
+### Docker (recommended)
 
 ```bash
 docker run -d \
@@ -45,7 +36,19 @@ docker run -d \
   --env-file .env \
   -p 127.0.0.1:8001:8000 \
   --restart unless-stopped \
-  ghcr.io/kmishukov/appstore-webhook:1.0.0
+  ghcr.io/kmishukov/appstore-webhook:latest
+```
+
+Replace `latest` with a release such as `1.0.0` to pin the deployment to a
+specific version.
+
+### Docker Compose
+
+Alternatively, download the Compose file and start the same published image:
+
+```bash
+curl -fsSLO https://raw.githubusercontent.com/kmishukov/AppStoreWebhook/main/docker-compose.yaml
+docker compose up -d
 ```
 
 Choose one of these methods, then check the service:
