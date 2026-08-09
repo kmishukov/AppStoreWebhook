@@ -49,5 +49,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Validate Docker Compose configuration
+        run: |
+          cp .env.example .env
+          docker compose config --quiet
+
       - name: Build Docker image
         run: docker build --tag appstore-webhook:ci .

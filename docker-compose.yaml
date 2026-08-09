@@ -1,6 +1,6 @@
 services:
   api:
-    build: .
+    image: ghcr.io/kmishukov/appstore-webhook:${APPSTORE_WEBHOOK_VERSION:-latest}
     container_name: appstore_webhook_api
     env_file:
       - .env
