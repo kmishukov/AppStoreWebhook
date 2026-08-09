@@ -7,6 +7,10 @@ from app.main import app
 client = TestClient(app)
 
 
+def test_httpx_request_logging_is_suppressed():
+    assert logging.getLogger("httpx").getEffectiveLevel() >= logging.WARNING
+
+
 def test_health():
     response = client.get("/health")
 

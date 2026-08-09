@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Multi-app verification with per-app verifier caching and an optional bundle ID/App Apple ID allowlist.
 - Environment selection and optional OCSP certificate revocation checks.
 - Privacy-safe notification metadata logging and Telegram HTML escaping.
+- Telegram HTTP request log suppression to prevent bot token disclosure.
 - Configurable message timezone.
 - Smaller Docker build context, non-root container user, and Docker build CI check.
 - Automated versioned Docker image publishing to GitHub Container Registry.

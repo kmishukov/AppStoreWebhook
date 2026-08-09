@@ -13,6 +13,9 @@ from app.message_formatter import validate_message_formatter_configuration
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
+# HTTPX includes the full Telegram Bot API URL in its INFO request log. The URL
+# contains the bot token, so request logging must stay disabled.
+logging.getLogger("httpx").setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 
 
