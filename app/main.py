@@ -1,6 +1,5 @@
 import json
 import logging
-from typing import Any, Dict
 
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.responses import JSONResponse
@@ -44,7 +43,7 @@ async def appstore_webhook(request: Request):
         # Parse JSON
         try:
             data = await request.json()
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001 — untrusted request body, any parse failure is a 400
             logger.error(f"Error parsing JSON: {e}")
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid JSON format"
@@ -101,8 +100,8 @@ async def appstore_webhook(request: Request):
         # Process notification
         try:
             process_notification(notification_type, decoded_payload)
-        except Exception as e:
-            logger.error(f"Error while processing notification: {e}", exc_info=True)
+        except Exception:
+            logger.exception("Error while processing notification")
             # Return 200 OK even on processing error
             # so that Apple does not keep retrying
             return JSONResponse(
@@ -128,8 +127,8 @@ async def appstore_webhook(request: Request):
     except HTTPException:
         # Re-raise HTTP exceptions as is
         raise
-    except Exception as e:
-        logger.error(f"Unexpected error while handling webhook: {e}", exc_info=True)
+    except Exception:
+        logger.exception("Unexpected error while handling webhook")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal server error",

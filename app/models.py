@@ -2,8 +2,7 @@
 Data models for App Store Server Notifications.
 """
 
-from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -15,7 +14,7 @@ class TransactionInfo(BaseModel):
     original_transaction_id: str = Field(..., alias="originalTransactionId")
     product_id: str = Field(..., alias="productId")
     purchase_date: int = Field(..., alias="purchaseDate")
-    expires_date: Optional[int] = Field(None, alias="expiresDate")
+    expires_date: int | None = Field(None, alias="expiresDate")
     quantity: int = 1
     type: str = "Auto-Renewable Subscription"
     environment: str = "Production"  # or "Sandbox"
@@ -25,29 +24,29 @@ class TransactionInfo(BaseModel):
 class RenewalInfo(BaseModel):
     """Subscription renewal information."""
 
-    expiration_intent: Optional[str] = Field(None, alias="expirationIntent")
+    expiration_intent: str | None = Field(None, alias="expirationIntent")
     auto_renew_status: int = Field(..., alias="autoRenewStatus")
-    auto_renew_product_id: Optional[str] = Field(None, alias="autoRenewProductId")
-    is_in_billing_retry_period: Optional[bool] = Field(
+    auto_renew_product_id: str | None = Field(None, alias="autoRenewProductId")
+    is_in_billing_retry_period: bool | None = Field(
         None, alias="isInBillingRetryPeriod"
     )
-    product_id: Optional[str] = Field(None, alias="productId")
-    price_consent_status: Optional[int] = Field(None, alias="priceConsentStatus")
+    product_id: str | None = Field(None, alias="productId")
+    price_consent_status: int | None = Field(None, alias="priceConsentStatus")
 
 
 class NotificationPayload(BaseModel):
     """Main notification payload from Apple."""
 
     notification_type: str = Field(..., alias="notificationType")
-    subtype: Optional[str] = None
+    subtype: str | None = None
     notification_uuid: str = Field(..., alias="notificationUUID")
-    data: Dict[str, Any] = Field(..., alias="data")
+    data: dict[str, Any] = Field(..., alias="data")
     version: str = "2.0"
     signed_date: int = Field(..., alias="signedDate")
 
     # Additional derived fields from `data`
     @property
-    def transaction_info(self) -> Optional[TransactionInfo]:
+    def transaction_info(self) -> TransactionInfo | None:
         """Extracts transaction info from `data`."""
         bundle_id = self.data.get("bundleId")
         if bundle_id and "signedTransactionInfo" in self.data:
@@ -57,7 +56,7 @@ class NotificationPayload(BaseModel):
         return None
 
     @property
-    def renewal_info(self) -> Optional[RenewalInfo]:
+    def renewal_info(self) -> RenewalInfo | None:
         """Extracts renewal info from `data`."""
         bundle_id = self.data.get("bundleId")
         if bundle_id and "signedRenewalInfo" in self.data:
@@ -72,7 +71,7 @@ class AppStoreNotification(BaseModel):
     signed_payload: str = Field(..., alias="signedPayload")
 
     # Decoded payload (after JWT validation)
-    payload: Optional[NotificationPayload] = None
+    payload: NotificationPayload | None = None
 
     class Config:
         allow_population_by_field_name = True

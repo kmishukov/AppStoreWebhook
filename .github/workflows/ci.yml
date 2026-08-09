@@ -19,6 +19,9 @@ jobs:
       - name: Install lint tools
         run: pip install ruff isort
 
+      - name: Ruff check
+        run: ruff check .
+
       - name: Ruff format check
         run: ruff format --check .
 

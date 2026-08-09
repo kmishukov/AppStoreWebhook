@@ -5,7 +5,7 @@ Formats notification data into HTML messages for Telegram.
 
 import logging
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any
 from zoneinfo import ZoneInfo
 
 from app.jwt_validator import validate_jwt_token
@@ -41,7 +41,7 @@ NOTIFICATION_TYPES = {
 }
 
 
-def format_timestamp(timestamp: Optional[int]) -> str:
+def format_timestamp(timestamp: int | None) -> str:
     """Format Unix timestamp to readable date in Moscow timezone (UTC+3)."""
     if not timestamp:
         return "N/A"
@@ -56,7 +56,7 @@ def format_timestamp(timestamp: Optional[int]) -> str:
         return str(timestamp)
 
 
-def format_notification_message(notification_type: str, payload: Dict[str, Any]) -> str:
+def format_notification_message(notification_type: str, payload: dict[str, Any]) -> str:
     """
     Format notification message in unified HTML style.
 
@@ -76,7 +76,7 @@ def format_notification_message(notification_type: str, payload: Dict[str, Any])
 
     # Build message header
     message_parts = [
-        f"<b>📱 App Store Notification</b>",
+        "<b>📱 App Store Notification</b>",
         "",
         f"<b>Type:</b> <code>{notification_type}</code>",
         f"<b>Description:</b> {notification_desc}",
@@ -131,7 +131,7 @@ def format_notification_message(notification_type: str, payload: Dict[str, Any])
                         )
                 else:
                     message_parts.append("<i>JWT decode failed</i>")
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001 — best-effort message enrichment, must not break the alert
             logger.warning(f"Failed to decode transaction info: {e}")
             message_parts.append("<i>JWT decode error</i>")
 
@@ -152,7 +152,7 @@ def format_notification_message(notification_type: str, payload: Dict[str, Any])
                     message_parts.append(f"<code>Product ID:</code> {product_id}")
                 else:
                     message_parts.append("<i>JWT decode failed</i>")
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001 — best-effort message enrichment, must not break the alert
             logger.warning(f"Failed to decode renewal info: {e}")
             message_parts.append("<i>JWT decode error</i>")
 

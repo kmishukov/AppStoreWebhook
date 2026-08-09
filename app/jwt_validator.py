@@ -4,16 +4,12 @@ Apple uses JWT tokens with an X.509 certificate chain (x5c) for signing.
 """
 
 import base64
-import json
 import logging
-from datetime import datetime, timezone
-from typing import Any, Dict, Optional
+from typing import Any
 
 import jwt
-import requests
 from cryptography import x509
 from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives import serialization
 
 logger = logging.getLogger(__name__)
 
@@ -21,10 +17,10 @@ logger = logging.getLogger(__name__)
 APPLE_ROOT_CA_URL = "https://www.apple.com/certificateauthority/AppleRootCA-G3.cer"
 
 # In-memory cache for public keys (in production use Redis or another cache)
-_key_cache: Dict[str, Any] = {}
+_key_cache: dict[str, Any] = {}
 
 
-def get_apple_public_key(jwt_token: str) -> Optional[Any]:
+def get_apple_public_key(jwt_token: str) -> Any | None:
     """
     Extracts the public key from Apple's JWT token.
     Apple uses x5c (X.509 certificate chain) in the JWT header.
@@ -58,12 +54,12 @@ def get_apple_public_key(jwt_token: str) -> Optional[Any]:
 
         return public_key
 
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001 — untrusted JWT header/cert, any parse failure means "no key"
         logger.error(f"Error extracting public key: {e}")
         return None
 
 
-def validate_jwt_token(signed_payload: str) -> Optional[Dict[str, Any]]:
+def validate_jwt_token(signed_payload: str) -> dict[str, Any] | None:
     """
     Validates Apple's JWT token and returns decoded payload.
 
@@ -103,6 +99,6 @@ def validate_jwt_token(signed_payload: str) -> Optional[Dict[str, Any]]:
     except jwt.InvalidTokenError as e:
         logger.error(f"Invalid JWT token: {e}")
         return None
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001 — untrusted token, any unexpected failure means "invalid"
         logger.error(f"Error validating JWT token: {e}")
         return None
