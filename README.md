@@ -12,11 +12,12 @@ A small FastAPI service for receiving App Store Server Notifications V2 and forw
 - Handles common subscription and purchase events
 - Sends formatted alerts to Telegram
 - Supports unknown notification types
+- Provides a prebuilt image through GitHub Container Registry
 - Includes Docker Compose and a health-check endpoint
 
 ## Quick start
 
-Create a directory and download the Docker Compose configuration:
+Create a directory and download the configuration files:
 
 ```bash
 mkdir appstore-webhook
@@ -25,13 +26,54 @@ curl -fsSLO https://raw.githubusercontent.com/kmishukov/AppStoreWebhook/main/doc
 curl -fsSL https://raw.githubusercontent.com/kmishukov/AppStoreWebhook/main/.env.example -o .env
 ```
 
-Add your Telegram credentials to `.env`:
+Open `.env` and add your Telegram credentials. The Apple defaults work for both
+Production and Sandbox notifications.
+
+### Docker Compose (recommended)
+
+```bash
+docker compose up -d
+```
+
+### Docker
+
+Alternatively, run the published image directly:
+
+```bash
+docker run -d \
+  --name appstore_webhook_api \
+  --env-file .env \
+  -p 127.0.0.1:8001:8000 \
+  --restart unless-stopped \
+  ghcr.io/kmishukov/appstore-webhook:1.0.0
+```
+
+Choose one of these methods, then check the service:
+
+```bash
+curl -i http://127.0.0.1:8001/health
+```
+
+The service listens only on localhost. Put it behind an HTTPS reverse proxy before
+using it as an App Store webhook.
+
+To update a Docker Compose installation:
+
+```bash
+docker compose pull
+docker compose up -d
+```
+
+Set `APPSTORE_WEBHOOK_VERSION` in `.env` to a release such as `1.0.0` for a
+reproducible deployment, or use `latest` to follow the newest stable image.
+
+## Configuration
 
 - `TELEGRAM_CHAT_ID` is the destination Telegram chat ID.
 - `TOKEN` is the bot token issued by [BotFather](https://t.me/BotFather).
 - `TIMEZONE` is the IANA timezone used in Telegram messages (default: `America/New_York`).
 
-Configure Apple verification:
+Apple verification settings:
 
 - `APPLE_ENVIRONMENTS` controls whether the service accepts `Production`, `Sandbox`, or both.
 - `APPLE_ENABLE_ONLINE_CHECKS` enables Apple certificate revocation checks through OCSP.
@@ -53,28 +95,6 @@ private key.
 
 The service validates this configuration during startup and refuses to start when
 required Apple settings or certificates are missing.
-
-Start the service:
-
-```bash
-docker compose up -d
-```
-
-The API will be available at `http://localhost:8001`.
-
-```bash
-curl http://localhost:8001/health
-```
-
-To update to the newest image:
-
-```bash
-docker compose pull
-docker compose up -d
-```
-
-For a reproducible deployment, set `APPSTORE_WEBHOOK_VERSION` in `.env` to a
-specific release such as `1.0.0` instead of `latest`.
 
 ## App Store Connect
 
