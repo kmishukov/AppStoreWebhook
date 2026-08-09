@@ -1,5 +1,9 @@
 # App Store Webhook Handler
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-009688.svg)](https://fastapi.tiangolo.com/)
+
 A small FastAPI service for receiving App Store Server Notifications V2 and forwarding subscription event alerts to Telegram.
 
 ## Features
@@ -63,3 +67,7 @@ The current validator verifies an ES256 signature using the leaf certificate fro
 - [App Store Server Notifications](https://developer.apple.com/documentation/appstoreservernotifications)
 - [FastAPI](https://fastapi.tiangolo.com/)
 - [PyJWT](https://pyjwt.readthedocs.io/)
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
