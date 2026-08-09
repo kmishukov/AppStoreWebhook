@@ -1,2 +1,1 @@
 """App Store Webhook Handler."""
-

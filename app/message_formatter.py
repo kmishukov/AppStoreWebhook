@@ -2,6 +2,7 @@
 Message formatter for App Store Server Notifications.
 Formats notification data into HTML messages for Telegram.
 """
+
 import logging
 from datetime import datetime
 from typing import Any, Dict, Optional
@@ -58,11 +59,11 @@ def format_timestamp(timestamp: Optional[int]) -> str:
 def format_notification_message(notification_type: str, payload: Dict[str, Any]) -> str:
     """
     Format notification message in unified HTML style.
-    
+
     Args:
         notification_type: Type of notification
         payload: Decoded notification payload
-        
+
     Returns:
         Formatted HTML message
     """
@@ -72,7 +73,7 @@ def format_notification_message(notification_type: str, payload: Dict[str, Any])
     subtype = payload.get("subtype")
     signed_date = payload.get("signedDate")
     environment = payload.get("data", {}).get("environment", "Unknown")
-    
+
     # Build message header
     message_parts = [
         f"<b>📱 App Store Notification</b>",
@@ -80,17 +81,19 @@ def format_notification_message(notification_type: str, payload: Dict[str, Any])
         f"<b>Type:</b> <code>{notification_type}</code>",
         f"<b>Description:</b> {notification_desc}",
     ]
-    
+
     if subtype:
         message_parts.append(f"<b>Subtype:</b> <code>{subtype}</code>")
-    
-    message_parts.extend([
-        f"<b>UUID:</b> <code>{notification_uuid}</code>",
-        f"<b>Bundle ID:</b> <code>{bundle_id}</code>",
-        f"<b>Environment:</b> <code>{environment}</code>",
-        f"<b>Date:</b> <code>{format_timestamp(signed_date)}</code>",
-    ])
-    
+
+    message_parts.extend(
+        [
+            f"<b>UUID:</b> <code>{notification_uuid}</code>",
+            f"<b>Bundle ID:</b> <code>{bundle_id}</code>",
+            f"<b>Environment:</b> <code>{environment}</code>",
+            f"<b>Date:</b> <code>{format_timestamp(signed_date)}</code>",
+        ]
+    )
+
     # Extract transaction info if available
     data = payload.get("data", {})
     if "signedTransactionInfo" in data:
@@ -105,25 +108,33 @@ def format_notification_message(notification_type: str, payload: Dict[str, Any])
                     product_id = decoded_tx.get("productId", "N/A")
                     purchase_date = decoded_tx.get("purchaseDate")
                     expires_date = decoded_tx.get("expiresDate")
-                    storefront = decoded_tx.get("storefront")  # Country/region code (e.g., "RUS", "USA")
+                    storefront = decoded_tx.get(
+                        "storefront"
+                    )  # Country/region code (e.g., "RUS", "USA")
                     storefront_id = decoded_tx.get("storefrontId")  # Storefront ID
-                    
+
                     message_parts.append(f"<code>Transaction ID:</code> {tx_id}")
                     message_parts.append(f"<code>Product ID:</code> {product_id}")
                     if storefront:
                         message_parts.append(f"<code>Storefront:</code> {storefront}")
                     if storefront_id:
-                        message_parts.append(f"<code>Storefront ID:</code> {storefront_id}")
+                        message_parts.append(
+                            f"<code>Storefront ID:</code> {storefront_id}"
+                        )
                     if purchase_date:
-                        message_parts.append(f"<code>Purchase:</code> {format_timestamp(purchase_date)}")
+                        message_parts.append(
+                            f"<code>Purchase:</code> {format_timestamp(purchase_date)}"
+                        )
                     if expires_date:
-                        message_parts.append(f"<code>Expires:</code> {format_timestamp(expires_date)}")
+                        message_parts.append(
+                            f"<code>Expires:</code> {format_timestamp(expires_date)}"
+                        )
                 else:
                     message_parts.append("<i>JWT decode failed</i>")
         except Exception as e:
             logger.warning(f"Failed to decode transaction info: {e}")
             message_parts.append("<i>JWT decode error</i>")
-    
+
     # Extract renewal info if available
     if "signedRenewalInfo" in data:
         message_parts.append("")
@@ -135,13 +146,14 @@ def format_notification_message(notification_type: str, payload: Dict[str, Any])
                 if decoded_renewal:
                     auto_renew = decoded_renewal.get("autoRenewStatus", 0)
                     product_id = decoded_renewal.get("autoRenewProductId", "N/A")
-                    message_parts.append(f"<code>Auto-renew:</code> {'Enabled' if auto_renew == 1 else 'Disabled'}")
+                    message_parts.append(
+                        f"<code>Auto-renew:</code> {'Enabled' if auto_renew == 1 else 'Disabled'}"
+                    )
                     message_parts.append(f"<code>Product ID:</code> {product_id}")
                 else:
                     message_parts.append("<i>JWT decode failed</i>")
         except Exception as e:
             logger.warning(f"Failed to decode renewal info: {e}")
             message_parts.append("<i>JWT decode error</i>")
-    
-    return "\n".join(message_parts)
 
+    return "\n".join(message_parts)

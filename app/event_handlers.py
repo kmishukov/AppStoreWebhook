@@ -1,6 +1,7 @@
 """
 Handlers for different event types from App Store Server Notifications.
 """
+
 import logging
 from typing import Any, Dict
 
@@ -90,7 +91,9 @@ def handle_consumption_request(payload: Dict[str, Any]) -> None:
 
 def handle_external_purchase_token(payload: Dict[str, Any]) -> None:
     """Handle external purchase token notification."""
-    logger.info("Handling EXTERNAL_PURCHASE_TOKEN: external purchase token notification")
+    logger.info(
+        "Handling EXTERNAL_PURCHASE_TOKEN: external purchase token notification"
+    )
     message = format_notification_message("EXTERNAL_PURCHASE_TOKEN", payload)
     send_message(message)
 
@@ -210,24 +213,33 @@ def handle_unknown(payload: Dict[str, Any], notification_type: str) -> None:
 def process_notification(notification_type: str, payload: Dict[str, Any]) -> None:
     """
     Process incoming notification depending on its type.
-    
+
     Args:
         notification_type: Notification type (e.g. "SUBSCRIBED")
         payload: Decoded notification payload
     """
     handler = EVENT_HANDLERS.get(notification_type)
-    
+
     if handler:
         try:
             handler(payload)
-            logger.info(f"Successfully processed notification of type {notification_type}")
+            logger.info(
+                f"Successfully processed notification of type {notification_type}"
+            )
         except Exception as e:
-            logger.error(f"Error while processing notification {notification_type}: {e}", exc_info=True)
+            logger.error(
+                f"Error while processing notification {notification_type}: {e}",
+                exc_info=True,
+            )
     else:
         # Handle unknown types - still send notification to Telegram
-        logger.warning(f"Unknown notification type: {notification_type}, sending anyway")
+        logger.warning(
+            f"Unknown notification type: {notification_type}, sending anyway"
+        )
         try:
             handle_unknown(payload, notification_type)
         except Exception as e:
-            logger.error(f"Error while handling unknown notification type {notification_type}: {e}", exc_info=True)
-
+            logger.error(
+                f"Error while handling unknown notification type {notification_type}: {e}",
+                exc_info=True,
+            )

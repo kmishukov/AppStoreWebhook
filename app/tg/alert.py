@@ -8,7 +8,7 @@ from app.tg.config import Configuration
 def send_message(message: str) -> None:
     """
     Send a message to Telegram.
-    
+
     Args:
         message: Message text to send
     """
@@ -16,4 +16,6 @@ def send_message(message: str) -> None:
     bot = telegram.Bot(config.getToken())
 
     loop = asyncio.get_event_loop()
-    loop.create_task(bot.send_message(text=message, chat_id=config.getAdminID(), parse_mode="HTML"))
+    loop.create_task(
+        bot.send_message(text=message, chat_id=config.getAdminID(), parse_mode="HTML")
+    )
