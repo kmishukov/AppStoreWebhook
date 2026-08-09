@@ -7,8 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-08-09
+
 ### Added
 
+- FastAPI service receiving App Store Server Notifications V2.
+- Telegram alerts for subscription and purchase lifecycle events.
+- Docker Compose setup with a health-check endpoint.
 - `LICENSE` (MIT).
 - CI workflow (GitHub Actions) running lint (`ruff`, `isort`) and the test suite on push/PR.
 - Test suite (`pytest`) covering JWT validation and the webhook endpoint.
@@ -23,11 +28,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Smaller Docker build context, non-root container user, and Docker build CI check.
 - Automated versioned Docker image publishing to GitHub Container Registry.
 
-## [1.0.0]
-
-### Added
-
-- FastAPI service receiving App Store Server Notifications V2.
-- JWT signature validation (ES256) using the leaf certificate from the `x5c` header.
-- Telegram alerts for subscription and purchase lifecycle events.
-- Docker Compose setup with a health-check endpoint.
+[Unreleased]: https://github.com/kmishukov/AppStoreWebhook/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/kmishukov/AppStoreWebhook/releases/tag/v1.0.0
