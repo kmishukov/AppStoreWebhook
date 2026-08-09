@@ -43,3 +43,11 @@ jobs:
 
       - name: Run tests
         run: pytest
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build --tag appstore-webhook:ci .

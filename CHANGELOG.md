@@ -17,6 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Trusted JWS verification using Apple's official App Store Server Library and Apple Root CA G3.
 - Multi-app verification with per-app verifier caching and an optional bundle ID/App Apple ID allowlist.
 - Environment selection and optional OCSP certificate revocation checks.
+- Privacy-safe notification metadata logging and Telegram HTML escaping.
+- Configurable message timezone and trusted reverse proxy addresses.
+- Smaller Docker build context, non-root container user, and Docker build CI check.
 
 ## [1.0.0]
 

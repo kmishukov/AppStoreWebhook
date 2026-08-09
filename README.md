@@ -28,6 +28,7 @@ Add your Telegram credentials to `.env`:
 
 - `TELEGRAM_CHAT_ID` is the destination Telegram chat ID.
 - `TOKEN` is the bot token issued by [BotFather](https://t.me/BotFather).
+- `TIMEZONE` is the IANA timezone used in Telegram messages (default: `America/New_York`).
 
 Configure Apple verification:
 

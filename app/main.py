@@ -1,13 +1,13 @@
-import json
 import logging
 from contextlib import asynccontextmanager
+from typing import Any
 
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.responses import JSONResponse
 
 from app.event_handlers import process_notification
 from app.jwt_validator import validate_jwt_token, validate_verifier_configuration
-from app.message_formatter import NOTIFICATION_TYPES
+from app.message_formatter import validate_message_formatter_configuration
 
 # Logging configuration
 logging.basicConfig(
@@ -18,9 +18,19 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
-    """Validate Apple verification settings before accepting webhooks."""
+    """Validate configuration before accepting webhooks."""
     validate_verifier_configuration()
+    validate_message_formatter_configuration()
     yield
+
+
+def _notification_identity(payload: dict[str, Any]) -> dict[str, Any]:
+    """Return non-sensitive app metadata for structured logging."""
+    for field in ("data", "summary", "appData", "externalPurchaseToken"):
+        value = payload.get(field)
+        if isinstance(value, dict):
+            return value
+    return {}
 
 
 app = FastAPI(
@@ -46,23 +56,17 @@ async def appstore_webhook(request: Request):
     field with a JWT token that must be validated and decoded.
     """
     try:
-        # Read raw body for logging
+        # Read raw body so its size can be included in the metadata log.
         body = await request.body()
-        logger.info(f"Received notification from App Store. Size: {len(body)} bytes")
 
         # Parse JSON
         try:
             data = await request.json()
         except Exception as e:  # noqa: BLE001 — untrusted request body, any parse failure is a 400
-            logger.error(f"Error parsing JSON: {e}")
+            logger.error("Error parsing JSON: %s", e)
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid JSON format"
             )
-
-        # Log incoming request (without sensitive data)
-        logger.info(
-            f"Incoming notification: {json.dumps({k: v for k, v in data.items() if k != 'signedPayload'}, indent=2)}"
-        )
 
         # Ensure signedPayload is present
         if "signedPayload" not in data:
@@ -84,11 +88,6 @@ async def appstore_webhook(request: Request):
                 detail="Invalid or expired JWT token",
             )
 
-        # Log decoded payload
-        logger.info(
-            f"Decoded payload: {json.dumps(decoded_payload, indent=2, default=str)}"
-        )
-
         # Extract notification type
         notification_type = decoded_payload.get("notificationType")
 
@@ -99,12 +98,25 @@ async def appstore_webhook(request: Request):
                 detail="Missing 'notificationType' in payload",
             )
 
-        # Log notification type
-        notification_description = NOTIFICATION_TYPES.get(
-            notification_type, f"Unknown type: {notification_type}"
-        )
+        identity = _notification_identity(decoded_payload)
+        environment = identity.get("environment", "Unknown")
+        external_purchase_id = identity.get("externalPurchaseId")
+        if environment == "Unknown" and isinstance(external_purchase_id, str):
+            environment = (
+                "Sandbox"
+                if external_purchase_id.startswith("SANDBOX")
+                else "Production"
+            )
+
         logger.info(
-            f"Notification type: {notification_type} - {notification_description}"
+            "Notification received: uuid=%s type=%s subtype=%s bundle_id=%s "
+            "environment=%s size_bytes=%d",
+            decoded_payload.get("notificationUUID", "N/A"),
+            notification_type,
+            decoded_payload.get("subtype") or "-",
+            identity.get("bundleId", "N/A"),
+            environment,
+            len(body),
         )
 
         # Process notification

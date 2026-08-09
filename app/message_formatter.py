@@ -3,14 +3,18 @@ Message formatter for App Store Server Notifications.
 Formats notification data into HTML messages for Telegram.
 """
 
+import html
 import logging
+import os
 from datetime import datetime
+from functools import lru_cache
 from typing import Any
 from zoneinfo import ZoneInfo
 
 from app.jwt_validator import validate_renewal_info_token, validate_transaction_token
 
 logger = logging.getLogger(__name__)
+DEFAULT_TIMEZONE = "America/New_York"
 
 # Notification types from Apple (human‑readable descriptions)
 # Based on: https://developer.apple.com/documentation/appstoreservernotifications/notificationtype
@@ -41,16 +45,32 @@ NOTIFICATION_TYPES = {
 }
 
 
+@lru_cache(maxsize=1)
+def get_timezone() -> ZoneInfo:
+    """Load the configured display timezone once per process."""
+    timezone_name = os.getenv("TIMEZONE", DEFAULT_TIMEZONE).strip() or DEFAULT_TIMEZONE
+    return ZoneInfo(timezone_name)
+
+
+def validate_message_formatter_configuration() -> None:
+    """Fail fast during startup when TIMEZONE is invalid."""
+    get_timezone()
+
+
+def _escape(value: Any) -> str:
+    """Escape a dynamic value for Telegram HTML parse mode."""
+    return html.escape(str(value), quote=False)
+
+
 def format_timestamp(timestamp: int | None) -> str:
-    """Format Unix timestamp to readable date in Moscow timezone (UTC+3)."""
+    """Format an Apple millisecond timestamp in the configured timezone."""
     if not timestamp:
         return "N/A"
     try:
         # Convert to seconds (Apple timestamps are in milliseconds)
         dt_utc = datetime.fromtimestamp(timestamp / 1000, tz=ZoneInfo("UTC"))
-        # Convert to Moscow timezone
-        dt_moscow = dt_utc.astimezone(ZoneInfo("Europe/Moscow"))
-        return dt_moscow.strftime("%Y-%m-%d %H:%M:%S MSK")
+        dt_local = dt_utc.astimezone(get_timezone())
+        return dt_local.strftime("%Y-%m-%d %H:%M:%S %Z")
     except (ValueError, OSError) as e:
         logger.warning(f"Failed to format timestamp {timestamp}: {e}")
         return str(timestamp)
@@ -79,18 +99,18 @@ def format_notification_message(notification_type: str, payload: dict[str, Any])
     message_parts = [
         "<b>📱 App Store Notification</b>",
         "",
-        f"<b>Type:</b> <code>{notification_type}</code>",
-        f"<b>Description:</b> {notification_desc}",
+        f"<b>Type:</b> <code>{_escape(notification_type)}</code>",
+        f"<b>Description:</b> {_escape(notification_desc)}",
     ]
 
     if subtype:
-        message_parts.append(f"<b>Subtype:</b> <code>{subtype}</code>")
+        message_parts.append(f"<b>Subtype:</b> <code>{_escape(subtype)}</code>")
 
     message_parts.extend(
         [
-            f"<b>UUID:</b> <code>{notification_uuid}</code>",
-            f"<b>Bundle ID:</b> <code>{bundle_id}</code>",
-            f"<b>Environment:</b> <code>{environment}</code>",
+            f"<b>UUID:</b> <code>{_escape(notification_uuid)}</code>",
+            f"<b>Bundle ID:</b> <code>{_escape(bundle_id)}</code>",
+            f"<b>Environment:</b> <code>{_escape(environment)}</code>",
             f"<b>Date:</b> <code>{format_timestamp(signed_date)}</code>",
         ]
     )
@@ -116,13 +136,19 @@ def format_notification_message(notification_type: str, payload: dict[str, Any])
                     )  # Country/region code (e.g., "RUS", "USA")
                     storefront_id = decoded_tx.get("storefrontId")  # Storefront ID
 
-                    message_parts.append(f"<code>Transaction ID:</code> {tx_id}")
-                    message_parts.append(f"<code>Product ID:</code> {product_id}")
+                    message_parts.append(
+                        f"<code>Transaction ID:</code> {_escape(tx_id)}"
+                    )
+                    message_parts.append(
+                        f"<code>Product ID:</code> {_escape(product_id)}"
+                    )
                     if storefront:
-                        message_parts.append(f"<code>Storefront:</code> {storefront}")
+                        message_parts.append(
+                            f"<code>Storefront:</code> {_escape(storefront)}"
+                        )
                     if storefront_id:
                         message_parts.append(
-                            f"<code>Storefront ID:</code> {storefront_id}"
+                            f"<code>Storefront ID:</code> {_escape(storefront_id)}"
                         )
                     if purchase_date:
                         message_parts.append(
@@ -154,7 +180,9 @@ def format_notification_message(notification_type: str, payload: dict[str, Any])
                     message_parts.append(
                         f"<code>Auto-renew:</code> {'Enabled' if auto_renew == 1 else 'Disabled'}"
                     )
-                    message_parts.append(f"<code>Product ID:</code> {product_id}")
+                    message_parts.append(
+                        f"<code>Product ID:</code> {_escape(product_id)}"
+                    )
                 else:
                     message_parts.append("<i>JWT decode failed</i>")
         except Exception as e:  # noqa: BLE001 — best-effort message enrichment, must not break the alert

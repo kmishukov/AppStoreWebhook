@@ -1,3 +1,5 @@
+import logging
+
 from fastapi.testclient import TestClient
 
 from app.main import app
@@ -60,3 +62,34 @@ def test_webhook_success(monkeypatch):
     body = response.json()
     assert body["status"] == "success"
     assert body["notification_type"] == "TEST"
+
+
+def test_webhook_logs_only_safe_notification_metadata(monkeypatch, caplog):
+    monkeypatch.setattr("app.main.process_notification", lambda *args, **kwargs: None)
+    monkeypatch.setattr(
+        "app.main.validate_jwt_token",
+        lambda _token: {
+            "notificationType": "DID_RENEW",
+            "notificationUUID": "abc-123",
+            "subtype": "INITIAL_BUY",
+            "data": {
+                "bundleId": "com.example.app",
+                "environment": "Sandbox",
+                "signedTransactionInfo": "sensitive-transaction-jws",
+            },
+        },
+    )
+
+    with caplog.at_level(logging.INFO, logger="app.main"):
+        response = client.post(
+            "/v1/webhook", json={"signedPayload": "sensitive-notification-jws"}
+        )
+
+    assert response.status_code == 200
+    messages = "\n".join(record.getMessage() for record in caplog.records)
+    assert "uuid=abc-123" in messages
+    assert "type=DID_RENEW" in messages
+    assert "bundle_id=com.example.app" in messages
+    assert "environment=Sandbox" in messages
+    assert "sensitive-notification-jws" not in messages
+    assert "sensitive-transaction-jws" not in messages
