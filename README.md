@@ -4,7 +4,9 @@
 [![Python](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-009688.svg)](https://fastapi.tiangolo.com/)
 
-A small FastAPI service for receiving App Store Server Notifications V2 and forwarding subscription event alerts to Telegram.
+A Docker-first, self-hosted bridge from App Store Server Notifications V2 to
+Telegram. It verifies Apple-signed payloads and can receive notifications from
+multiple apps through a single webhook endpoint.
 
 ## Features
 
