@@ -13,6 +13,7 @@ class TransactionInfo(BaseModel):
     transaction_id: str = Field(..., alias="transactionId")
     original_transaction_id: str = Field(..., alias="originalTransactionId")
     product_id: str = Field(..., alias="productId")
+    in_app_ownership_type: str | None = Field(None, alias="inAppOwnershipType")
     purchase_date: int = Field(..., alias="purchaseDate")
     expires_date: int | None = Field(None, alias="expiresDate")
     quantity: int = 1

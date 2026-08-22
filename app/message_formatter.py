@@ -30,7 +30,10 @@ NOTIFICATION_TYPES = {
     "METADATA_UPDATE": "Subscription metadata changed (Advanced Commerce API)",
     "MIGRATION": "Subscription migrated to Advanced Commerce API",
     "OFFER_REDEEMED": "Customer redeemed subscription offer",
-    "ONE_TIME_CHARGE": "Customer purchased consumable/non-consumable/non-renewing subscription",
+    "ONE_TIME_CHARGE": (
+        "Customer purchased a one-time product or received a non-consumable "
+        "through Family Sharing"
+    ),
     "PRICE_CHANGE": "Subscription price changed (Advanced Commerce API)",
     "PRICE_INCREASE": "System informed customer of subscription price increase",
     "REFUND": "App Store successfully refunded a transaction",
@@ -129,6 +132,7 @@ def format_notification_message(notification_type: str, payload: dict[str, Any])
                 if decoded_tx:
                     tx_id = decoded_tx.get("transactionId", "N/A")
                     product_id = decoded_tx.get("productId", "N/A")
+                    ownership_type = decoded_tx.get("inAppOwnershipType")
                     purchase_date = decoded_tx.get("purchaseDate")
                     expires_date = decoded_tx.get("expiresDate")
                     storefront = decoded_tx.get(
@@ -142,6 +146,10 @@ def format_notification_message(notification_type: str, payload: dict[str, Any])
                     message_parts.append(
                         f"<code>Product ID:</code> {_escape(product_id)}"
                     )
+                    if ownership_type:
+                        message_parts.append(
+                            f"<code>Ownership:</code> {_escape(ownership_type)}"
+                        )
                     if storefront:
                         message_parts.append(
                             f"<code>Storefront:</code> {_escape(storefront)}"
