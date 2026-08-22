@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-08-22
+
+### Added
+
+- Transaction ownership in Telegram alerts to distinguish purchases (`PURCHASED`)
+  from access granted through Family Sharing (`FAMILY_SHARED`).
+- Startup validation for `TOKEN` and `TELEGRAM_CHAT_ID`.
+
+### Changed
+
+- Clarified the `ONE_TIME_CHARGE` description to include non-consumables received
+  through Family Sharing.
+- Invalid Telegram configuration now prevents the service from starting instead
+  of failing only when an alert is sent.
+
 ## [1.0.0] - 2026-08-09
 
 ### Added
@@ -28,5 +43,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Smaller Docker build context, non-root container user, and Docker build CI check.
 - Automated versioned Docker image publishing to GitHub Container Registry.
 
-[Unreleased]: https://github.com/kmishukov/AppStoreWebhook/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/kmishukov/AppStoreWebhook/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/kmishukov/AppStoreWebhook/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/kmishukov/AppStoreWebhook/releases/tag/v1.0.0

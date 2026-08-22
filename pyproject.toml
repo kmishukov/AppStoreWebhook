@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "appstore-webhook"
-version = "1.0.0"
+version = "1.1.0"
 description = "FastAPI service for receiving App Store Server Notifications V2 and forwarding subscription alerts to Telegram."
 readme = "README.md"
 requires-python = ">=3.12"

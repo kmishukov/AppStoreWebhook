@@ -41,7 +41,7 @@ docker run -d \
   ghcr.io/kmishukov/appstore-webhook:latest
 ```
 
-Replace `latest` with a release such as `1.0.0` to pin the deployment to a
+Replace `latest` with a release such as `1.1.0` to pin the deployment to a
 specific version.
 
 ### Docker Compose
@@ -69,7 +69,7 @@ docker compose pull
 docker compose up -d
 ```
 
-Set `APPSTORE_WEBHOOK_VERSION` in `.env` to a release such as `1.0.0` for a
+Set `APPSTORE_WEBHOOK_VERSION` in `.env` to a release such as `1.1.0` for a
 reproducible deployment, or use `latest` to follow the newest stable image.
 
 ## Configuration
