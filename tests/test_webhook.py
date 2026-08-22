@@ -1,10 +1,19 @@
 import logging
 
+import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
 
 client = TestClient(app)
+
+
+def test_startup_rejects_missing_telegram_configuration(monkeypatch):
+    monkeypatch.delenv("TOKEN", raising=False)
+    monkeypatch.delenv("TELEGRAM_CHAT_ID", raising=False)
+
+    with pytest.raises(ValueError, match="TOKEN"), TestClient(app):
+        pass
 
 
 def test_httpx_request_logging_is_suppressed():
