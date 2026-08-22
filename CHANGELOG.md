@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-08-22
+
+### Added
+
+- A built-in Docker health check, including CI verification that published images
+  contain it.
+
 ## [1.1.0] - 2026-08-22
 
 ### Added
@@ -43,6 +50,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Smaller Docker build context, non-root container user, and Docker build CI check.
 - Automated versioned Docker image publishing to GitHub Container Registry.
 
-[Unreleased]: https://github.com/kmishukov/AppStoreWebhook/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/kmishukov/AppStoreWebhook/compare/v1.1.1...HEAD
+[1.1.1]: https://github.com/kmishukov/AppStoreWebhook/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/kmishukov/AppStoreWebhook/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/kmishukov/AppStoreWebhook/releases/tag/v1.0.0

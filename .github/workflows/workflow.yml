@@ -56,3 +56,7 @@ jobs:
 
       - name: Build Docker image
         run: docker build --tag appstore-webhook:ci .
+
+      - name: Verify Docker image health check
+        run: |
+          test "$(docker inspect --format '{{json .Config.Healthcheck.Test}}' appstore-webhook:ci)" != "null"

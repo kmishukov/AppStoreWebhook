@@ -41,7 +41,7 @@ def _notification_identity(payload: dict[str, Any]) -> dict[str, Any]:
 app = FastAPI(
     title="App Store Webhook Handler",
     description="Webhook handler for App Store Server Notifications",
-    version="1.1.0",
+    version="1.1.1",
     lifespan=lifespan,
 )
 
