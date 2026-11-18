@@ -74,4 +74,4 @@ jobs:
           severity: CRITICAL
           ignore-unfixed: true
           exit-code: '1'
-          trivy-version: v0.76.2
+          version: v0.76.2
