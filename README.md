@@ -13,6 +13,7 @@ multiple apps through a single webhook endpoint.
 - Validates signed JWT payloads from App Store notifications
 - Handles common subscription and purchase events
 - Sends formatted alerts to Telegram
+- Optional Telegram HTML widgets for private chats (Bot API 10.4) with text fallback
 - Supports unknown notification types
 - Provides a prebuilt image through GitHub Container Registry
 - Includes Docker Compose and a health-check endpoint
@@ -78,6 +79,7 @@ reproducible deployment, or use `latest` to follow the newest stable image.
 ## Configuration
 
 - `TELEGRAM_CHAT_ID` is the destination Telegram chat ID.
+- `TELEGRAM_MESSAGE_MODE` is `text` (default) or `widget`. Widget mode uses Bot API 10.4 `sendWidget` for private chats and falls back to text if delivery fails. Telegram production currently does not support widgets in groups/channels; use `text` there. The first widget version is a static event summary, not an interactive dashboard.
 - `TOKEN` is the bot token issued by [BotFather](https://t.me/BotFather).
 - `TIMEZONE` is the IANA timezone used in Telegram messages (default: `America/New_York`).
 
