@@ -94,3 +94,45 @@ def test_failed_widget_delivery_falls_back_to_text(monkeypatch):
 
     asyncio.run(widget_sender._send_widget_with_fallback("legacy", "<b>widget</b>"))
     assert sent == ["legacy"]
+
+
+
+def test_purchase_title_navy_design_and_disclosure():
+    markup = render_notification_widget(_payload())
+    assert "<h1>Purchase</h1>" in markup
+    assert "#003764" in markup
+    assert "radial-gradient" in markup
+    assert "<details>" in markup
+    assert "ONE_TIME_CHARGE" in markup
+    assert "secret-jws" not in markup
+
+
+@pytest.mark.parametrize(
+    ("event_type", "expected"),
+    [
+        ("SUBSCRIBED", "<h1>New subscription</h1>"),
+        ("DID_RENEW", "<h1>Renewal</h1>"),
+        ("REFUND", "<h1>Refund</h1>"),
+        ("SOME_NEW_EVENT", "<h1>Some New Event</h1>"),
+    ],
+)
+def test_human_readable_event_labels(event_type, expected):
+    payload = _payload()
+    payload["notificationType"] = event_type
+    assert expected in render_notification_widget(payload)
+
+
+def test_verified_transaction_information(monkeypatch):
+    def fake_verify(*_args):
+        return {
+            "productId": "com.example.app.unlock_pro",
+            "storefront": "USA",
+            "inAppOwnershipType": "FAMILY_SHARED",
+        }
+
+    monkeypatch.setattr("app.tg.widget.validate_transaction_token", fake_verify)
+    markup = render_notification_widget(_payload())
+    assert "Unlock Pro" in markup
+    assert "Family Sharing" in markup
+    assert "USA" in markup
+    assert "com.example.app.unlock_pro" in markup
