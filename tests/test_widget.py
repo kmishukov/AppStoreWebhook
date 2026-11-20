@@ -26,8 +26,8 @@ def test_widget_escapes_untrusted_values():
     payload = _payload()
     payload["data"]["bundleId"] = '<script>alert("x")</script>'
     widget = render_notification_widget(payload)
-    assert '&lt;script&gt;' in widget
-    assert '<script>alert' not in widget
+    assert "&lt;script&gt;" in widget
+    assert "<script>alert" not in widget
     assert "secret-jws" not in widget
     assert len(widget.encode()) <= 32768
     assert len(zlib.compress(widget.encode(), level=9)) <= 4096
@@ -35,9 +35,7 @@ def test_widget_escapes_untrusted_values():
 
 def test_widget_rejects_excessive_content():
     payload = _payload()
-    payload["data"]["bundleId"] = "".join(
-        chr(0x4E00 + i % 20000) for i in range(30000)
-    )
+    payload["data"]["bundleId"] = "".join(chr(0x4E00 + i % 20000) for i in range(30000))
     with pytest.raises(ValueError, match="size limits"):
         render_notification_widget(payload)
 
@@ -94,7 +92,6 @@ def test_failed_widget_delivery_falls_back_to_text(monkeypatch):
 
     asyncio.run(widget_sender._send_widget_with_fallback("legacy", "<b>widget</b>"))
     assert sent == ["legacy"]
-
 
 
 def test_purchase_title_navy_design_and_disclosure():

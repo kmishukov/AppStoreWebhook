@@ -230,7 +230,7 @@ def render_notification_widget(payload: dict[str, Any]) -> str:
             f'<p class="description">{_safe(description)}</p>',
             '</section><section class="content"><div class="app">',
             f'<span class="appmark">{_safe(app_name[0].upper())}</span>',
-            '<div>',
+            "<div>",
             f'<div class="appname">{_safe(app_name)}</div>',
             f'<div class="bundle">{_safe(bundle)}</div>',
             "</div></div>",
