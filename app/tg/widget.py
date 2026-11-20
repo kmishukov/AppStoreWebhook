@@ -18,8 +18,18 @@ EVENTS = {
         "↗",
         "purchase",
     ),
-    "SUBSCRIBED": ("New subscription", "A subscription was started", "✦", "subscription"),
-    "DID_RENEW": ("Renewal", "A subscription renewed successfully", "↗", "subscription"),
+    "SUBSCRIBED": (
+        "New subscription",
+        "A subscription was started",
+        "✦",
+        "subscription",
+    ),
+    "DID_RENEW": (
+        "Renewal",
+        "A subscription renewed successfully",
+        "↗",
+        "subscription",
+    ),
     "DID_FAIL_TO_RENEW": (
         "Billing issue",
         "A subscription renewal failed",
@@ -27,10 +37,30 @@ EVENTS = {
         "refund",
     ),
     "REFUND": ("Refund", "A purchase was refunded", "↶", "refund"),
-    "REFUND_DECLINED": ("Refund declined", "A refund request was declined", "↶", "refund"),
-    "REFUND_REVERSED": ("Refund reversed", "A refund was reversed", "↗", "purchase"),
-    "EXPIRED": ("Subscription expired", "A subscription has expired", "−", "refund"),
-    "REVOKE": ("Access revoked", "A purchase is no longer available", "−", "refund"),
+    "REFUND_DECLINED": (
+        "Refund declined",
+        "A refund request was declined",
+        "↶",
+        "refund",
+    ),
+    "REFUND_REVERSED": (
+        "Refund reversed",
+        "A refund was reversed",
+        "↗",
+        "purchase",
+    ),
+    "EXPIRED": (
+        "Subscription expired",
+        "A subscription has expired",
+        "−",
+        "refund",
+    ),
+    "REVOKE": (
+        "Access revoked",
+        "A purchase is no longer available",
+        "−",
+        "refund",
+    ),
     "DID_CHANGE_RENEWAL_STATUS": (
         "Renewal settings",
         "Auto-renewal status changed",
@@ -43,7 +73,12 @@ EVENTS = {
         "↻",
         "subscription",
     ),
-    "TEST": ("Test notification", "A test event from App Store Connect", "✓", "other"),
+    "TEST": (
+        "Test notification",
+        "A test event from App Store Connect",
+        "✓",
+        "other",
+    ),
 }
 
 _CSS = """
@@ -112,9 +147,7 @@ def _app_name(bundle_id: str) -> str:
     return last_segment.replace("-", " ").replace("_", " ").title() or "App Store"
 
 
-def _verified_transaction(
-    identity: dict[str, Any],
-) -> dict[str, Any]:
+def _verified_transaction(identity: dict[str, Any]) -> dict[str, Any]:
     """Only show transaction fields decoded and verified against the parent app."""
     token = identity.get("signedTransactionInfo")
     if not isinstance(token, str) or not token:
@@ -163,11 +196,8 @@ def render_notification_widget(payload: dict[str, Any]) -> str:
     fields.append(("Received", timestamp))
 
     rows = "".join(
-        '<div class="row"><span class="label">'
-        + _safe(label)
-        + '</span><span class="value">'
-        + _safe(value)
-        + "</span></div>"
+        f'<div class="row"><span class="label">{_safe(label)}</span>'
+        f'<span class="value">{_safe(value)}</span></div>'
         for label, value in fields
     )
     technical = [
@@ -178,45 +208,42 @@ def render_notification_widget(payload: dict[str, Any]) -> str:
     if product_id:
         technical.append(("Product ID", product_id))
     technical_html = "".join(
-        '<div class="technical"><b>'
-        + _safe(label)
-        + ":</b> "
-        + _safe(value)
-        + "</div>"
+        f'<div class="technical"><b>{_safe(label)}:</b> {_safe(value)}</div>'
         for label, value in technical
     )
     badge = "SANDBOX" if environment.casefold() == "sandbox" else "APP STORE"
-    markup = (
-        '<!doctype html><html><head><meta charset="UTF-8">'
-        '<meta name="viewport" content="width=device-width,initial-scale=1">'
-        "<style>"
-        + _CSS
-        + '</style></head><body><section class="hero '
-        + theme
-        + '"><div class="top"><span class="brand">APPSTOREWEBHOOK</span>'
-        '<span class="pill">'
-        + badge
-        + '</span></div><div class="heading"><h1>'
-        + _safe(title)
-        + '</h1><span class="symbol">'
-        + _safe(symbol)
-        + '</span></div><p class="description">'
-        + _safe(description)
-        + '</p></section><section class="content"><div class="app">'
-        '<span class="appmark">'
-        + _safe(app_name[0].upper())
-        + '</span><div><div class="appname">'
-        + _safe(app_name)
-        + '</div><div class="bundle">'
-        + _safe(bundle)
-        + '</div></div></div>'
-        + rows
-        + '<details><summary>Technical details</summary>'
-        + technical_html
-        + '</details><div class="footer">APP STORE ACTIVITY</div>'
-        '</section></body></html>'
+    markup = "".join(
+        [
+            '<!doctype html><html><head><meta charset="UTF-8">',
+            '<meta name="viewport" content="width=device-width,initial-scale=1">',
+            "<style>",
+            _CSS,
+            "</style></head><body>",
+            f'<section class="hero {theme}">',
+            '<div class="top"><span class="brand">APPSTOREWEBHOOK</span>',
+            f'<span class="pill">{badge}</span></div>',
+            '<div class="heading">',
+            f"<h1>{_safe(title)}</h1>",
+            f'<span class="symbol">{_safe(symbol)}</span>',
+            "</div>",
+            f'<p class="description">{_safe(description)}</p>',
+            '</section><section class="content"><div class="app">',
+            f'<span class="appmark">{_safe(app_name[0].upper())}</span>',
+            '<div>',
+            f'<div class="appname">{_safe(app_name)}</div>',
+            f'<div class="bundle">{_safe(bundle)}</div>',
+            "</div></div>",
+            rows,
+            "<details><summary>Technical details</summary>",
+            technical_html,
+            '</details><div class="footer">APP STORE ACTIVITY</div>',
+            "</section></body></html>",
+        ]
     )
     raw = markup.encode("utf-8")
-    if len(raw) > MAX_HTML_BYTES or len(zlib.compress(raw, level=9)) > MAX_COMPRESSED_BYTES:
+    if (
+        len(raw) > MAX_HTML_BYTES
+        or len(zlib.compress(raw, level=9)) > MAX_COMPRESSED_BYTES
+    ):
         raise ValueError("Telegram widget exceeds HTML size limits")
     return markup
