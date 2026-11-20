@@ -9,7 +9,6 @@ from app.event_handlers import process_notification
 from app.jwt_validator import validate_jwt_token, validate_verifier_configuration
 from app.message_formatter import validate_message_formatter_configuration
 from app.tg.config import validate_telegram_configuration
-from app.tg.widget_sender import get_message_mode
 
 # Logging configuration
 logging.basicConfig(
@@ -25,7 +24,6 @@ logger = logging.getLogger(__name__)
 async def lifespan(_app: FastAPI):
     """Validate configuration before accepting webhooks."""
     validate_telegram_configuration()
-    get_message_mode()
     validate_verifier_configuration()
     validate_message_formatter_configuration()
     yield
