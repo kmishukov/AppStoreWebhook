@@ -5,12 +5,20 @@ on:
     tags:
       - "v*.*.*"
 
+permissions:
+  contents: read
+
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: kmishukov/appstore-webhook
 
 jobs:
+  ci:
+    name: Release checks
+    uses: ./.github/workflows/workflow.yml
+
   publish:
+    needs: ci
     runs-on: ubuntu-latest
     permissions:
       contents: read
