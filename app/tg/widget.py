@@ -241,8 +241,6 @@ def render_notification_widget(payload: dict[str, Any]) -> str:
             "</section></body></html>",
         ]
     )
-    if "\\x00" in markup:
-        raise ValueError("Telegram widget cannot contain NUL characters")
     raw = markup.encode("utf-8")
     if (
         len(raw) > MAX_HTML_BYTES
