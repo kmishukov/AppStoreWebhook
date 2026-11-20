@@ -137,6 +137,7 @@ summary{color:#9ec9f7}
 }
 """
 
+
 def _safe(value: Any) -> str:
     return html.escape(str(value), quote=True)
 
